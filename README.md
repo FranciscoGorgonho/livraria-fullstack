@@ -1,101 +1,110 @@
-# Livraria FullStack
+<div align="center">
 
-Eu desenvolvi este projeto como uma aplicação full stack para gerenciar um catálogo de livros de forma simples e prática. A ideia foi criar um sistema completo, com backend em Node.js e frontend em HTML, CSS e JavaScript, para permitir o cadastro, consulta, edição e exclusão de livros de maneira intuitiva.
+# 📚 Livraria FullStack
 
-Minha intenção foi manter a aplicação fácil de entender, leve de executar e útil para cenários reais de gestão de acervo bibliográfico. O projeto funciona como uma livraria digital, onde eu posso registrar títulos, associar autores e manter o controle das publicações.
+**Catálogo de livros full stack com API REST em Node.js, PostgreSQL e uma interface moderna em JavaScript puro.**
 
-## Sobre o projeto
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express_5-000000?style=for-the-badge&logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
-Este sistema foi pensado para facilitar a administração de um acervo de livros. A aplicação permite registrar informações como título, autor e ano de publicação, além de gerenciar os dados de forma organizada e acessível.
+[Funcionalidades](#-funcionalidades) •
+[Tecnologias](#%EF%B8%8F-tecnologias) •
+[Como executar](#-como-executar) •
+[API](#-api) •
+[Roadmap](#%EF%B8%8F-roadmap)
 
-A estrutura da aplicação está dividida em:
+<br />
 
-- backend em Node.js com Express para expor a API;
-- banco de dados PostgreSQL para armazenar as informações;
-- frontend em HTML, CSS e JavaScript para interagir com o usuário;
-- validações básicas para garantir dados consistentes antes de salvar.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/catalogo-escuro.jpg" />
+  <img alt="Tela do catálogo com capas de livros, busca e estatísticas do acervo" src="docs/screenshots/catalogo-claro.jpg" width="900" />
+</picture>
 
-## Funcionalidades
+<sub>A imagem acima acompanha o tema do seu GitHub: troque para o modo escuro e veja a outra versão.</sub>
 
-Eu implementei as seguintes funcionalidades no projeto:
+</div>
 
-- cadastro de livros;
-- listagem completa dos livros cadastrados;
-- edição de dados já existentes;
-- exclusão de livros do catálogo;
-- associação automática de autores ao cadastrar ou atualizar um livro;
-- validação dos campos obrigatórios;
-- interface simples para uso direto no navegador.
+---
 
-## Tecnologias utilizadas
+## ✨ Funcionalidades
 
-Eu usei as seguintes tecnologias para construir a aplicação:
+| | |
+|---|---|
+| 📖 **Catálogo visual** | Livros exibidos como capas em um grid responsivo |
+| 🖼️ **Capas automáticas** | Buscadas na [Open Library](https://openlibrary.org/developers/api) a partir do título e autor. Sem resultado, uma capa colorida é gerada |
+| 🔍 **Busca instantânea** | Por título ou autor, ignorando acentos. Atalho: <kbd>/</kbd> |
+| ↕️ **Ordenação** | Por cadastro, título, autor ou ano de publicação |
+| 🌗 **Tema claro e escuro** | Segue o sistema e lembra a escolha do usuário |
+| 📊 **Números do acervo** | Total de livros, autores e período coberto |
+| ✍️ **CRUD completo** | Cadastro e edição em modal, com erros de validação exibidos em cada campo |
+| 📱 **Responsivo e acessível** | Funciona no celular, navegável por teclado e compatível com leitores de tela |
 
-- Node.js
-- Express
-- PostgreSQL
-- pg
-- dotenv
-- CORS
-- HTML
-- CSS
-- JavaScript
+## 🛠️ Tecnologias
 
-## Estrutura do projeto
+**Backend**
+- [Node.js](https://nodejs.org/) + [Express 5](https://expressjs.com/): API REST
+- [PostgreSQL](https://www.postgresql.org/) + [node-postgres](https://node-postgres.com/): persistência, com queries parametrizadas e transações
+- [dotenv](https://github.com/motdotla/dotenv) e [CORS](https://github.com/expressjs/cors)
 
-A estrutura atual do projeto está organizada assim:
+**Frontend**
+- HTML, CSS e JavaScript puros, sem frameworks
+- Design tokens em CSS custom properties, `<dialog>` nativo e Fetch API
+- Fontes [Fraunces](https://fonts.google.com/specimen/Fraunces) e [Inter](https://fonts.google.com/specimen/Inter)
+
+## 🏛️ Arquitetura
+
+```text
+┌──────────────┐   HTTP/JSON   ┌───────────────────────────────────────┐   SQL   ┌────────────┐
+│   Frontend   │ ────────────▶ │ routes → controllers → models  (API)  │ ──────▶ │ PostgreSQL │
+│  HTML/CSS/JS │ ◀──────────── │       middleware de erros             │ ◀────── │            │
+└──────────────┘               └───────────────────────────────────────┘         └────────────┘
+       │
+       └──▶ Open Library (capas)
+```
 
 ```text
 livraria-fullstack/
 ├── backend/
-│   ├── config/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── package.json
-│   ├── server.js
-│   └── .env
+│   ├── config/db.js            # Pool de conexões com o PostgreSQL
+│   ├── controllers/            # Validação e regras das requisições
+│   ├── middleware/             # Tratamento centralizado de erros
+│   ├── models/                 # Queries SQL e transações
+│   ├── routes/                 # Definição dos endpoints
+│   ├── server.js               # Ponto de entrada da API
+│   └── .env.example            # Modelo das variáveis de ambiente
 ├── frontend/
 │   ├── index.html
 │   ├── script.js
 │   └── styles.css
-├── tests/
-│   └── test-db.js
-├── README.md
-└── .gitignore
+├── docs/screenshots/           # Imagens deste README
+└── tests/test-db.js            # Teste de conexão com o banco
 ```
 
-## Pré-requisitos
+## 🚀 Como executar
 
-Antes de começar, eu preciso ter instalado no meu ambiente:
+### Pré-requisitos
 
-- Node.js
-- npm
-- PostgreSQL
-- Git
-- VS Code ou outro editor de código
+- [Node.js](https://nodejs.org/) 18 ou superior
+- [PostgreSQL](https://www.postgresql.org/download/) 14 ou superior
 
-## Instalação
-
-Eu sigo os passos abaixo para configurar o projeto localmente:
-
-1. Clone o repositório:
+### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/livraria-fullstack.git
+git clone https://github.com/FranciscoGorgonho/livraria-fullstack.git
 cd livraria-fullstack
 ```
 
-2. Crie o banco de dados no PostgreSQL:
+### 2. Crie o banco de dados
 
 ```sql
 CREATE DATABASE livraria;
-```
 
-3. Crie as tabelas necessárias:
+\c livraria
 
-```sql
 CREATE TABLE authors (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL
@@ -105,80 +114,47 @@ CREATE TABLE books (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   publication_year INT NOT NULL,
-  author_id INT,
-  FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
+  author_id INT REFERENCES authors (id) ON DELETE CASCADE
 );
 ```
 
-4. Acesse a pasta do backend e instale as dependências:
+### 3. Configure e inicie a API
 
 ```bash
 cd backend
+cp .env.example .env   # depois, preencha DB_PASSWORD com a sua senha
 npm install
-```
-
-5. Crie um arquivo `.env` dentro da pasta `backend` com as seguintes variáveis:
-
-```env
-PORT=3000
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=sua_senha
-DB_DATABASE=livraria
-```
-
-6. Inicie o servidor do backend:
-
-```bash
 node server.js
 ```
 
-Se tudo estiver correto, o backend estará disponível em:
+A API sobe em `http://localhost:3000`. Para confirmar a conexão com o banco, rode `node tests/test-db.js` a partir da raiz do projeto.
 
-```text
-http://localhost:3000
-```
+### 4. Abra o frontend
 
-## Como usar
-
-Eu utilizo a aplicação da seguinte forma:
-
-1. Abro o frontend no navegador;
-2. Preencho os campos de título, autor e ano de publicação;
-3. Clico em salvar para cadastrar um livro;
-4. Posso editar ou excluir qualquer item da lista;
-5. A interface conversa com a API do backend para realizar as operações.
-
-Para abrir o frontend, eu posso abrir o arquivo `frontend/index.html` diretamente no navegador ou servir a pasta com um servidor estático, por exemplo:
+Em outro terminal:
 
 ```bash
 cd frontend
 python -m http.server 8000
 ```
 
-Depois, acesso:
+Acesse **http://localhost:8000** 🎉
 
-```text
-http://localhost:8000
-```
+> Também funciona com a extensão **Live Server** do VS Code ou com `npx serve`.
 
-## Exemplos de uso da API
+## 📡 API
 
-Eu também posso consumir a API diretamente por HTTP. Abaixo estão alguns exemplos práticos.
+URL base: `http://localhost:3000/api/books`
 
-### Listar todos os livros
+| Método | Rota | Descrição | Sucesso |
+|---|---|---|---|
+| `GET` | `/` | Lista todos os livros | `200` |
+| `GET` | `/:id` | Busca um livro pelo ID | `200` |
+| `POST` | `/` | Cadastra um livro | `201` |
+| `PUT` | `/:id` | Atualiza um livro | `200` |
+| `DELETE` | `/:id` | Exclui um livro | `200` |
 
-```http
-GET http://localhost:3000/api/books
-```
-
-### Cadastrar um livro
-
-```http
-POST http://localhost:3000/api/books
-Content-Type: application/json
-```
+**Corpo para `POST` e `PUT`:**
 
 ```json
 {
@@ -188,47 +164,54 @@ Content-Type: application/json
 }
 ```
 
-### Buscar um livro por ID
+Se o autor ainda não existir, ele é criado automaticamente, na mesma transação do livro.
 
-```http
-GET http://localhost:3000/api/books/1
-```
+**Respostas de erro:**
 
-### Atualizar um livro
+| Status | Quando | Exemplo |
+|---|---|---|
+| `400` | Dados inválidos | `{ "errors": { "title": "Título é obrigatório" } }` |
+| `400` | ID não numérico ou JSON malformado | `{ "message": "ID inválido" }` |
+| `404` | Livro inexistente | `{ "message": "Livro não encontrado" }` |
+| `500` | Erro inesperado (detalhes apenas no log do servidor) | `{ "message": "Erro interno no servidor" }` |
 
-```http
-PUT http://localhost:3000/api/books/1
-Content-Type: application/json
-```
+## 🔒 Boas práticas aplicadas
 
-```json
-{
-  "title": "Memórias Póstumas de Brás Cubas",
-  "author_name": "Machado de Assis",
-  "publication_year": 1881
-}
-```
+- Queries parametrizadas contra **SQL injection**
+- Renderização com `textContent` contra **XSS**
+- Erros internos registrados só no servidor, nunca expostos ao cliente
+- Validação de tipo e de intervalo no backend
+- Credenciais fora do repositório (`.env` no `.gitignore`)
 
-### Excluir um livro
+## 🗺️ Roadmap
 
-```http
-DELETE http://localhost:3000/api/books/1
-```
+- [x] CRUD de livros com autores
+- [x] Interface com capas, busca, ordenação e tema escuro
+- [x] Correções de segurança (XSS, vazamento de erros, validação)
+- [ ] Script de criação do banco e seed com livros de exemplo
+- [ ] Scripts `npm run dev` e `npm start`
+- [ ] Documentação interativa da API com Swagger
+- [ ] Paginação e busca no backend
+- [ ] Testes automatizados com Jest e Supertest
+- [ ] Docker Compose (API + PostgreSQL)
+- [ ] CI com GitHub Actions
+- [ ] Deploy público
 
-## Contribuições
+## 🤝 Contribuindo
 
-Eu aceito contribuições para melhorar o projeto, corrigir bugs, adicionar novas funcionalidades e aprimorar a documentação. Se quiser colaborar comigo, o fluxo recomendado é:
+Contribuições são bem-vindas:
 
-1. fazer um fork do projeto;
-2. criar uma branch para a alteração;
-3. implementar a melhoria ou correção;
-4. abrir um pull request com uma descrição clara do que foi feito.
+1. Faça um fork do projeto
+2. Crie uma branch: `git checkout -b feat/minha-melhoria`
+3. Faça commits seguindo o padrão [Conventional Commits](https://www.conventionalcommits.org/pt-br/)
+4. Abra um Pull Request descrevendo a mudança
 
-Eu valorizo melhorias na interface, na API, na validação de dados e na experiência geral do usuário. Contribuições bem documentadas ajudam a manter o projeto mais organizado, estável e fácil de evoluir.
+---
 
-## Observações finais
+<div align="center">
 
-Eu desenvolvi esta aplicação como uma solução prática para gestão de livros, combinando frontend e backend em uma estrutura simples e funcional. O objetivo foi criar algo que pudesse ser executado localmente, entendido facilmente e ampliado conforme novas necessidades surgissem.
+Feito por **[Francisco Gorgonho](https://github.com/FranciscoGorgonho)**
 
-Se eu quiser evoluir o projeto no futuro, consigo expandir essa base para incluir busca por título, filtros por autor, paginação, autenticação, upload de imagens e muito mais.
+⭐ Se este projeto foi útil, deixe uma estrela!
 
+</div>
