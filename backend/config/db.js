@@ -1,8 +1,9 @@
 // Importa o Pool do módulo 'pg' (PostgreSQL)
 const { Pool } = require('pg')
 
-// Carrega variáveis de ambiente do arquivo .env
-require('dotenv').config()
+// Carrega variáveis de ambiente do arquivo .env da pasta backend,
+// independente do diretório de onde o processo foi iniciado
+require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
 
 // Cria uma nova instância de Pool para gerenciar conexões com o banco
 const pool = new Pool({
