@@ -61,16 +61,29 @@ async function fetchBooks() {
     bookList.innerHTML = ''
     books.forEach((book, index) => {
       const row = document.createElement('tr')
-      row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${book.title}</td>
-        <td>${book.author}</td>
-        <td>${book.publication_year}</td>
-        <td class="actions">
-          <button class="edit" onclick="editBook(${book.id}, '${escape(book.title)}', '${escape(book.author)}', ${book.publication_year})">Editar</button>
-          <button class="delete" onclick="deleteBook(${book.id})">Excluir</button>
-        </td>
-      `
+
+      // textContent evita que dados do usuário sejam interpretados como HTML (XSS)
+      for (const value of [index + 1, book.title, book.author, book.publication_year]) {
+        const cell = document.createElement('td')
+        cell.textContent = value
+        row.appendChild(cell)
+      }
+
+      const actions = document.createElement('td')
+      actions.className = 'actions'
+
+      const editBtn = document.createElement('button')
+      editBtn.className = 'edit'
+      editBtn.textContent = 'Editar'
+      editBtn.addEventListener('click', () => editBook(book))
+
+      const deleteBtn = document.createElement('button')
+      deleteBtn.className = 'delete'
+      deleteBtn.textContent = 'Excluir'
+      deleteBtn.addEventListener('click', () => deleteBook(book.id))
+
+      actions.append(editBtn, deleteBtn)
+      row.appendChild(actions)
       bookList.appendChild(row)
     })
   } catch (error) {
@@ -79,11 +92,11 @@ async function fetchBooks() {
   }
 }
 
-function editBook(id, title, author, publication_year) {
-  document.getElementById('title').value = unescape(title)
-  document.getElementById('author').value = unescape(author)
-  document.getElementById('year').value = publication_year
-  selectedBookId = id
+function editBook(book) {
+  document.getElementById('title').value = book.title
+  document.getElementById('author').value = book.author
+  document.getElementById('year').value = book.publication_year
+  selectedBookId = book.id
   cancelBtn.style.display = 'inline'
 }
 
@@ -91,7 +104,11 @@ async function deleteBook(id) {
   if (!confirm('Tem certeza que deseja excluir este livro?')) return
 
   try {
-    await fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+    const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+    if (!response.ok) {
+      const data = await response.json()
+      return alert(`Erro ao excluir: ${data.message}`)
+    }
     fetchBooks()
   } catch (err) {
     alert('Erro ao deletar livro.')

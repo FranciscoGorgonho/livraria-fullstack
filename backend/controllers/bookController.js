@@ -1,11 +1,28 @@
 const Book = require('../models/bookModel')
 
-function validateBook(data) {
+function isFilledString(value) {
+  return typeof value === 'string' && value.trim() !== ''
+}
+
+function validateBook(data = {}) {
   const errors = {}
-  if (!data.title || data.title.trim() === '') errors.title = 'Título é obrigatório'
-  if (!data.author_name || data.author_name.trim() === '') errors.author_name = 'Autor é obrigatório'
-  if (!data.publication_year || isNaN(data.publication_year)) errors.publication_year = 'Ano válido é obrigatório'
+  const year = Number(data.publication_year)
+  const currentYear = new Date().getFullYear()
+
+  if (!isFilledString(data.title)) errors.title = 'Título é obrigatório'
+  if (!isFilledString(data.author_name)) errors.author_name = 'Autor é obrigatório'
+  if (!Number.isInteger(year) || year < 1 || year > currentYear) {
+    errors.publication_year = `Ano deve ser um número inteiro entre 1 e ${currentYear}`
+  }
   return Object.keys(errors).length ? errors : null
+}
+
+function normalizeBook(data) {
+  return {
+    title: data.title.trim(),
+    author_name: data.author_name.trim(),
+    publication_year: Number(data.publication_year)
+  }
 }
 
 module.exports = {
@@ -35,7 +52,7 @@ module.exports = {
       const errors = validateBook(req.body)
       if (errors) return res.status(400).json({ errors })
 
-      const newBook = await Book.create(req.body)
+      const newBook = await Book.create(normalizeBook(req.body))
       res.status(201).json(newBook)
     } catch (error) {
       next(error)
@@ -52,7 +69,7 @@ module.exports = {
         return res.status(404).json({ message: 'Livro não encontrado' })
       }
 
-      await Book.update(req.params.id, req.body)
+      await Book.update(req.params.id, normalizeBook(req.body))
       res.json({ message: 'Livro atualizado com sucesso' })
     } catch (error) {
       next(error)

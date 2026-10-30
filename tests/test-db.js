@@ -1,4 +1,4 @@
-const pool = require('./db')
+const pool = require('../backend/config/db')
 
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
