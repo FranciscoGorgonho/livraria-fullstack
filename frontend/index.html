@@ -1,51 +1,96 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Catálogo de livros full stack com Node.js, Express e PostgreSQL." />
   <title>Livraria FullStack</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>📚 Livraria FullStack</h1>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="#">
+        <svg class="brand__logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+        </svg>
+        <span>Livraria<em>FullStack</em></span>
+      </a>
+      <div class="topbar__actions">
+        <button class="btn btn--primary" id="new-book-btn" type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14" /><path d="M5 12h14" /></svg>
+          Novo livro
+        </button>
+      </div>
+    </div>
+  </header>
 
-    <form id="book-form">
-      <input type="hidden" id="book-id" />
-      <div class="form-group">
-        <input type="text" id="title" placeholder="Título do Livro" required />
+  <main class="page">
+    <section class="hero">
+      <p class="hero__eyebrow">Acervo digital</p>
+      <h1 class="hero__title">Seu catálogo de livros, <span>bem organizado.</span></h1>
+      <p class="hero__subtitle">Cadastre, edite e encontre os títulos da sua livraria em poucos cliques.</p>
+    </section>
+
+    <section aria-labelledby="catalog-title">
+      <div class="section-head">
+        <h2 id="catalog-title">Catálogo</h2>
+        <span class="count" id="book-count"></span>
       </div>
-      <div class="form-group">
-        <input type="text" id="author" placeholder="Autor" required />
-      </div>
-      <div class="form-group">
-        <input type="number" id="year" placeholder="Ano de Publicação" required />
-      </div>
-      <div class="form-group">
-        <button type="submit">Salvar</button>
-        <button type="button" id="cancel-edit" style="display:none;">Cancelar</button>
-      </div>
+      <div class="book-grid" id="book-list" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <dialog class="modal" id="book-dialog" aria-labelledby="book-dialog-title">
+    <form class="modal__body" id="book-form" novalidate>
+      <header class="modal__header">
+        <h2 id="book-dialog-title">Novo livro</h2>
+        <button class="icon-btn" type="button" data-close aria-label="Fechar">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+        </button>
+      </header>
+
+      <label class="field">
+        <span>Título</span>
+        <input type="text" id="title" maxlength="255" autocomplete="off" placeholder="Ex.: Dom Casmurro" />
+        <small class="field__error"></small>
+      </label>
+      <label class="field">
+        <span>Autor</span>
+        <input type="text" id="author" maxlength="255" autocomplete="off" placeholder="Ex.: Machado de Assis" />
+        <small class="field__error"></small>
+      </label>
+      <label class="field">
+        <span>Ano de publicação</span>
+        <input type="number" id="year" min="1" inputmode="numeric" placeholder="Ex.: 1899" />
+        <small class="field__error"></small>
+      </label>
+
+      <p class="form-error" id="form-error" role="alert"></p>
+
+      <footer class="modal__footer">
+        <button class="btn btn--ghost" type="button" data-close>Cancelar</button>
+        <button class="btn btn--primary" type="submit" id="save-btn">Salvar</button>
+      </footer>
     </form>
+  </dialog>
 
-    <hr />
+  <dialog class="modal modal--sm" id="confirm-dialog" aria-labelledby="confirm-title">
+    <div class="modal__body">
+      <h2 id="confirm-title">Excluir livro?</h2>
+      <p id="confirm-text"></p>
+      <footer class="modal__footer">
+        <button class="btn btn--ghost" type="button" data-close>Cancelar</button>
+        <button class="btn btn--danger" type="button" id="confirm-delete">Excluir</button>
+      </footer>
+    </div>
+  </dialog>
 
-    <h2>📖 Lista de Livros</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Título</th>
-          <th>Autor</th>
-          <th>Ano</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="book-list">
-        <!-- Livros serão adicionados aqui via JS -->
-      </tbody>
-    </table>
-  </div>
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
   <script src="script.js"></script>
 </body>
