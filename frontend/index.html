@@ -32,9 +32,9 @@
           <svg class="icon icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
           <svg class="icon icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
         </button>
-        <button class="btn btn--primary" id="new-book-btn" type="button">
+        <button class="btn btn--primary" id="new-book-btn" type="button" aria-label="Novo livro">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14" /><path d="M5 12h14" /></svg>
-          Novo livro
+          <span class="btn__label">Novo livro</span>
         </button>
       </div>
     </div>
@@ -42,9 +42,25 @@
 
   <main class="page">
     <section class="hero">
-      <p class="hero__eyebrow">Acervo digital</p>
-      <h1 class="hero__title">Seu catálogo de livros, <span>bem organizado.</span></h1>
-      <p class="hero__subtitle">Cadastre, edite e encontre os títulos da sua livraria em poucos cliques.</p>
+      <div>
+        <p class="hero__eyebrow">Acervo digital</p>
+        <h1 class="hero__title">Seu catálogo de livros, <span>bem organizado.</span></h1>
+        <p class="hero__subtitle">Cadastre, edite e encontre os títulos da sua livraria em poucos cliques.</p>
+      </div>
+      <dl class="stats" id="stats" hidden>
+        <div class="stat">
+          <dt>Livros</dt>
+          <dd id="stat-books"></dd>
+        </div>
+        <div class="stat">
+          <dt>Autores</dt>
+          <dd id="stat-authors"></dd>
+        </div>
+        <div class="stat">
+          <dt>Período</dt>
+          <dd id="stat-range"></dd>
+        </div>
+      </dl>
     </section>
 
     <section aria-labelledby="catalog-title">

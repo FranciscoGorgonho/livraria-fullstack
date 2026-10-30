@@ -197,6 +197,19 @@ function visibleBooks() {
     .sort(SORTERS[sortSelect.value])
 }
 
+function renderStats() {
+  const stats = document.getElementById('stats')
+  stats.hidden = !books.length
+  if (!books.length) return
+
+  const years = books.map(book => book.publication_year)
+  const oldest = Math.min(...years)
+  const newest = Math.max(...years)
+  document.getElementById('stat-books').textContent = books.length
+  document.getElementById('stat-authors').textContent = new Set(books.map(book => book.author)).size
+  document.getElementById('stat-range').textContent = oldest === newest ? oldest : `${oldest}–${newest}`
+}
+
 function renderBooks() {
   const visible = visibleBooks()
   const label = books.length === 1 ? 'livro' : 'livros'
@@ -231,6 +244,7 @@ async function loadBooks({ skeleton = true } = {}) {
   if (skeleton) renderSkeleton()
   try {
     books = await request(API_URL)
+    renderStats()
     renderBooks()
   } catch (error) {
     console.error(error)
