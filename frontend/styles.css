@@ -280,6 +280,25 @@ button, input, select {
   background: linear-gradient(90deg, rgb(0 0 0 / 0.3), rgb(255 255 255 / 0.1));
 }
 
+.book-card__cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.book-card__cover.has-image img {
+  opacity: 1;
+}
+
+/* Mantém a lombada por cima da imagem real */
+.book-card__cover.has-image::before {
+  z-index: 1;
+}
+
 .book-card:hover .book-card__cover {
   transform: translateY(-6px) rotate(-1deg);
   box-shadow: var(--shadow-lg);

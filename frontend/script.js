@@ -66,6 +66,55 @@ function hueFrom(text) {
   return hash
 }
 
+// ---------- Capas (Open Library) ----------
+
+const COVER_CACHE_KEY = 'livraria:covers'
+const pendingCovers = new Map()
+let coverCache = {}
+try {
+  coverCache = JSON.parse(localStorage.getItem(COVER_CACHE_KEY)) || {}
+} catch {
+  // Sem acesso ao localStorage: as capas são buscadas a cada visita
+}
+
+function findCoverId(book) {
+  const key = normalize(`${book.title}|${book.author}`)
+  if (key in coverCache) return Promise.resolve(coverCache[key])
+  if (pendingCovers.has(key)) return pendingCovers.get(key)
+
+  const params = new URLSearchParams({ title: book.title, author: book.author, fields: 'cover_i', limit: 1 })
+  const lookup = fetch(`https://openlibrary.org/search.json?${params}`)
+    .then(response => (response.ok ? response.json() : Promise.reject(response)))
+    .then(data => {
+      coverCache[key] = data.docs?.[0]?.cover_i ?? null
+      try {
+        localStorage.setItem(COVER_CACHE_KEY, JSON.stringify(coverCache))
+      } catch {}
+      return coverCache[key]
+    })
+    .finally(() => pendingCovers.delete(key))
+
+  pendingCovers.set(key, lookup)
+  return lookup
+}
+
+// A capa gerada continua visível até a imagem real carregar (ou se ela não existir)
+async function loadCover(book, container) {
+  try {
+    const coverId = await findCoverId(book)
+    if (!coverId) return
+    const img = el('img', {
+      src: `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`,
+      alt: `Capa de ${book.title}`,
+      loading: 'lazy'
+    })
+    img.addEventListener('load', () => container.classList.add('has-image'))
+    container.append(img)
+  } catch {
+    // Falha na Open Library não deve afetar o catálogo
+  }
+}
+
 async function request(url, options = {}) {
   const response = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
@@ -122,6 +171,7 @@ function createCard(book) {
   const cover = el('div', { class: 'book-card__cover', style: `--hue: ${hueFrom(book.title + book.author)}` },
     el('span', { class: 'book-card__cover-title', text: book.title }),
     el('span', { class: 'book-card__cover-author', text: book.author }))
+  loadCover(book, cover)
 
   return el('article', { class: 'book-card' },
     cover,
