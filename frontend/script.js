@@ -11,6 +11,8 @@ const confirmDialog = document.getElementById('confirm-dialog')
 const confirmText = document.getElementById('confirm-text')
 const confirmBtn = document.getElementById('confirm-delete')
 const toasts = document.getElementById('toasts')
+const searchInput = document.getElementById('search')
+const sortSelect = document.getElementById('sort')
 
 // Campos do formulário indexados pelo nome usado na API
 const fields = {
@@ -24,6 +26,14 @@ const ICONS = {
   book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>',
   edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>'
+}
+
+const SORTERS = {
+  recent: (a, b) => b.id - a.id,
+  title: (a, b) => a.title.localeCompare(b.title, 'pt-BR'),
+  author: (a, b) => a.author.localeCompare(b.author, 'pt-BR'),
+  newest: (a, b) => b.publication_year - a.publication_year,
+  oldest: (a, b) => a.publication_year - b.publication_year
 }
 
 let books = []
@@ -125,8 +135,24 @@ function createCard(book) {
           el('button', { class: 'icon-btn icon-btn--danger', type: 'button', title: 'Excluir', 'aria-label': `Excluir ${book.title}`, onclick: () => askDelete(book) }, icon('trash'))))))
 }
 
+// Remove acentos e caixa para que "joao" encontre "João"
+function normalize(text) {
+  return String(text).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+}
+
+function visibleBooks() {
+  const term = normalize(searchInput.value.trim())
+  return books
+    .filter(book => !term || normalize(`${book.title} ${book.author}`).includes(term))
+    .sort(SORTERS[sortSelect.value])
+}
+
 function renderBooks() {
-  bookCount.textContent = `${books.length} ${books.length === 1 ? 'livro' : 'livros'}`
+  const visible = visibleBooks()
+  const label = books.length === 1 ? 'livro' : 'livros'
+  bookCount.textContent = visible.length === books.length
+    ? `${books.length} ${label}`
+    : `${visible.length} de ${books.length} ${label}`
 
   if (!books.length) {
     return renderMessage({
@@ -135,7 +161,20 @@ function renderBooks() {
       action: el('button', { class: 'btn btn--primary', type: 'button', text: 'Adicionar livro', onclick: () => openForm() })
     })
   }
-  bookList.replaceChildren(...books.map(createCard))
+  if (!visible.length) {
+    return renderMessage({
+      title: 'Nenhum livro encontrado',
+      text: `Nada corresponde a "${searchInput.value.trim()}".`,
+      action: el('button', { class: 'btn btn--ghost', type: 'button', text: 'Limpar busca', onclick: clearSearch })
+    })
+  }
+  bookList.replaceChildren(...visible.map(createCard))
+}
+
+function clearSearch() {
+  searchInput.value = ''
+  renderBooks()
+  searchInput.focus()
 }
 
 async function loadBooks({ skeleton = true } = {}) {
@@ -234,6 +273,17 @@ confirmBtn.addEventListener('click', async () => {
 // ---------- Eventos gerais ----------
 
 document.getElementById('new-book-btn').addEventListener('click', () => openForm())
+
+searchInput.addEventListener('input', renderBooks)
+sortSelect.addEventListener('change', renderBooks)
+
+// Atalho "/" foca a busca, como em GitHub e YouTube
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && !e.target.closest('input, textarea, select, dialog')) {
+    e.preventDefault()
+    searchInput.focus()
+  }
+})
 
 document.querySelectorAll('[data-close]').forEach(button =>
   button.addEventListener('click', () => button.closest('dialog').close())

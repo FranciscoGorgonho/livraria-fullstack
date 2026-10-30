@@ -195,6 +195,52 @@ button, input, select {
   font-size: 0.875rem;
 }
 
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search .icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search input,
+.select {
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search input {
+  width: 280px;
+  padding: 0 16px 0 40px;
+}
+
+.select {
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+.search input:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
 .book-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -641,6 +687,21 @@ button, input, select {
 
   .hero {
     padding: 40px 0 32px;
+  }
+
+  .section-head {
+    flex-wrap: wrap;
+  }
+
+  .toolbar {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+
+  .search,
+  .search input {
+    flex: 1;
+    width: 100%;
   }
 
   .book-grid {
