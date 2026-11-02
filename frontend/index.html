@@ -10,13 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <script>
-    // Aplica o tema salvo antes da renderização para evitar o "flash" de cores
-    try {
-      const theme = localStorage.getItem('livraria:theme')
-      if (theme) document.documentElement.dataset.theme = theme
-    } catch {}
-  </script>
+  <!-- Carregado no <head>, de forma síncrona, para aplicar o tema antes da renderização -->
+  <script src="theme.js"></script>
 </head>
 <body>
   <header class="topbar">

@@ -172,9 +172,11 @@ function renderMessage({ title, text, action }) {
 }
 
 function createCard(book) {
-  const cover = el('div', { class: 'book-card__cover', style: `--hue: ${hueFrom(book.title + book.author)}` },
+  const cover = el('div', { class: 'book-card__cover' },
     el('span', { class: 'book-card__cover-title', text: book.title }),
     el('span', { class: 'book-card__cover-author', text: book.author }))
+  // style.setProperty é permitido pela CSP; o atributo style inline não seria
+  cover.style.setProperty('--hue', hueFrom(book.title + book.author))
   loadCover(book, cover)
 
   return el('article', { class: 'book-card' },
