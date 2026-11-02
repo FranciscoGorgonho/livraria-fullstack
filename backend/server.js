@@ -4,9 +4,18 @@ require('dotenv').config({ path: path.join(__dirname, '.env') })
 
 const bookRoutes = require('./routes/bookRoutes')
 const errorHandler = require('./middleware/errorHandler')
-const { securityHeaders, corsPolicy, apiRateLimit } = require('./middleware/security')
+const { securityHeaders, docsSecurityHeaders, corsPolicy, apiRateLimit } = require('./middleware/security')
+const swaggerUi = require('swagger-ui-express')
+const openApiSpec = require('./docs/openapi')
 
 const app = express()
+
+// Registrada antes dos cabeçalhos gerais: o Swagger UI precisa de uma CSP própria
+app.use('/api/docs', docsSecurityHeaders, swaggerUi.serve, swaggerUi.setup(openApiSpec, {
+  customSiteTitle: 'Livraria FullStack API',
+  // Desativa o selo de validação, que dependeria de um serviço externo
+  swaggerOptions: { validatorUrl: null }
+}))
 
 app.use(securityHeaders)
 app.use('/api', corsPolicy, apiRateLimit)
