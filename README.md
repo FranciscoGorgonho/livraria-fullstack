@@ -71,10 +71,14 @@ livraria-fullstack/
 ├── backend/
 │   ├── config/db.js            # Pool de conexões com o PostgreSQL
 │   ├── controllers/            # Validação e regras das requisições
+│   ├── db/
+│   │   ├── schema.sql          # Estrutura das tabelas
+│   │   └── seed.sql            # Livros de exemplo
 │   ├── middleware/             # Tratamento centralizado de erros
 │   ├── models/                 # Queries SQL e transações
 │   ├── routes/                 # Definição dos endpoints
-│   ├── server.js               # Ponto de entrada da API
+│   ├── scripts/db.js           # Cria o banco, aplica schema e seed
+│   ├── server.js               # Ponto de entrada (API + frontend)
 │   └── .env.example            # Modelo das variáveis de ambiente
 ├── frontend/
 │   ├── index.html
@@ -88,7 +92,7 @@ livraria-fullstack/
 
 ### Pré-requisitos
 
-- [Node.js](https://nodejs.org/) 18 ou superior
+- [Node.js](https://nodejs.org/) 20 ou superior
 - [PostgreSQL](https://www.postgresql.org/download/) 14 ou superior
 
 ### 1. Clone o repositório
@@ -98,49 +102,46 @@ git clone https://github.com/FranciscoGorgonho/livraria-fullstack.git
 cd livraria-fullstack
 ```
 
-### 2. Crie o banco de dados
-
-```sql
-CREATE DATABASE livraria;
-
-\c livraria
-
-CREATE TABLE authors (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE books (
-  id SERIAL PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  publication_year INT NOT NULL,
-  author_id INT REFERENCES authors (id) ON DELETE CASCADE
-);
-```
-
-### 3. Configure e inicie a API
+### 2. Configure as variáveis de ambiente
 
 ```bash
 cd backend
-cp .env.example .env   # depois, preencha DB_PASSWORD com a sua senha
-npm install
-node server.js
+cp .env.example .env
 ```
 
-A API sobe em `http://localhost:3000`. Para confirmar a conexão com o banco, rode `node tests/test-db.js` a partir da raiz do projeto.
+Abra o `backend/.env` e preencha `DB_PASSWORD` com a senha do usuário `postgres`, definida na instalação do PostgreSQL.
 
-### 4. Abra o frontend
-
-Em outro terminal:
+### 3. Instale as dependências e prepare o banco
 
 ```bash
-cd frontend
-python -m http.server 8000
+npm install
+npm run db:setup
 ```
 
-Acesse **http://localhost:8000** 🎉
+O `db:setup` cria o banco `livraria` (se ainda não existir), as tabelas e 22 livros de exemplo. Pode ser executado de novo sem duplicar dados.
 
-> Também funciona com a extensão **Live Server** do VS Code ou com `npx serve`.
+### 4. Inicie a aplicação
+
+```bash
+npm run dev
+```
+
+Acesse **http://localhost:3000** 🎉
+
+A API e o frontend sobem juntos, e o servidor reinicia sozinho a cada alteração no código.
+
+### Scripts disponíveis
+
+Execute dentro da pasta `backend`:
+
+| Comando | O que faz |
+|---|---|
+| `npm run dev` | Inicia em modo de desenvolvimento, com recarga automática |
+| `npm start` | Inicia em modo normal |
+| `npm run db:setup` | Cria o banco, as tabelas e os dados de exemplo |
+| `npm run db:seed` | Insere apenas os dados de exemplo |
+| `npm run db:reset` | ⚠️ Apaga todas as tabelas e recria tudo do zero |
+| `npm run test:db` | Testa a conexão com o banco |
 
 ## 📡 API
 
@@ -188,8 +189,8 @@ Se o autor ainda não existir, ele é criado automaticamente, na mesma transaç�
 - [x] CRUD de livros com autores
 - [x] Interface com capas, busca, ordenação e tema escuro
 - [x] Correções de segurança (XSS, vazamento de erros, validação)
-- [ ] Script de criação do banco e seed com livros de exemplo
-- [ ] Scripts `npm run dev` e `npm start`
+- [x] Script de criação do banco e seed com livros de exemplo
+- [x] Scripts `npm run dev` e `npm start`
 - [ ] Documentação interativa da API com Swagger
 - [ ] Paginação e busca no backend
 - [ ] Testes automatizados com Jest e Supertest

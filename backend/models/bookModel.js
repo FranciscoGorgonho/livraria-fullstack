@@ -22,14 +22,17 @@ async function withTransaction(callback) {
   }
 }
 
+// Usa a restrição UNIQUE de authors.name: um único comando, sem risco de
+// duplicar o autor quando duas requisições chegam ao mesmo tempo.
+// O DO UPDATE sem efeito é o que faz o RETURNING devolver o autor existente.
 async function findOrCreateAuthor(client, name) {
-  const existing = await client.query('SELECT id FROM authors WHERE name = $1', [name])
-  if (existing.rows.length) return existing.rows[0].id
-
-  const created = await client.query(
-    'INSERT INTO authors (name) VALUES ($1) RETURNING id', [name]
+  const result = await client.query(
+    `INSERT INTO authors (name) VALUES ($1)
+     ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+     RETURNING id`,
+    [name]
   )
-  return created.rows[0].id
+  return result.rows[0].id
 }
 
 module.exports = {

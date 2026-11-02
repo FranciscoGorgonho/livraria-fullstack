@@ -1,4 +1,8 @@
-const API_URL = 'http://localhost:3000/api/books'
+// Servido pela própria API (npm run dev), usa a mesma origem. Aberto por outro
+// servidor estático (Live Server, http.server), aponta para a API local.
+const API_URL = location.port === '3000'
+  ? '/api/books'
+  : 'http://localhost:3000/api/books'
 
 const bookList = document.getElementById('book-list')
 const bookCount = document.getElementById('book-count')
