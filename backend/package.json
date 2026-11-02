@@ -1,14 +1,27 @@
 {
-  "name": "backend",
+  "name": "livraria-fullstack-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "API REST do catálogo de livros da Livraria FullStack",
+  "main": "server.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "db:setup": "node scripts/db.js setup",
+    "db:seed": "node scripts/db.js seed",
+    "db:reset": "node scripts/db.js reset",
+    "test:db": "node ../tests/test-db.js"
   },
-  "keywords": [],
-  "author": "",
+  "engines": {
+    "node": ">=18.11"
+  },
+  "keywords": [
+    "express",
+    "postgresql",
+    "rest-api"
+  ],
+  "author": "Francisco Gorgonho",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
