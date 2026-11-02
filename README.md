@@ -10,6 +10,8 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
+![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue?style=for-the-badge)
 
 [Funcionalidades](#-funcionalidades) •
 [Tecnologias](#%EF%B8%8F-tecnologias) •
@@ -48,7 +50,9 @@
 **Backend**
 - [Node.js](https://nodejs.org/) + [Express 5](https://expressjs.com/): API REST
 - [PostgreSQL](https://www.postgresql.org/) + [node-postgres](https://node-postgres.com/): persistência, com queries parametrizadas e transações
-- [dotenv](https://github.com/motdotla/dotenv) e [CORS](https://github.com/expressjs/cors)
+- [Swagger UI](https://swagger.io/tools/swagger-ui/): documentação interativa a partir de uma especificação OpenAPI 3
+- [Helmet](https://helmetjs.github.io/), [express-rate-limit](https://github.com/express-rate-limit/express-rate-limit) e [CORS](https://github.com/expressjs/cors): segurança
+- [dotenv](https://github.com/motdotla/dotenv): variáveis de ambiente
 
 **Frontend**
 - HTML, CSS e JavaScript puros, sem frameworks
@@ -74,7 +78,8 @@ livraria-fullstack/
 │   ├── db/
 │   │   ├── schema.sql          # Estrutura das tabelas
 │   │   └── seed.sql            # Livros de exemplo
-│   ├── middleware/             # Tratamento centralizado de erros
+│   ├── docs/openapi.js         # Especificação OpenAPI (Swagger)
+│   ├── middleware/             # Segurança e tratamento de erros
 │   ├── models/                 # Queries SQL e transações
 │   ├── routes/                 # Definição dos endpoints
 │   ├── scripts/db.js           # Cria o banco, aplica schema e seed
@@ -83,7 +88,8 @@ livraria-fullstack/
 ├── frontend/
 │   ├── index.html
 │   ├── script.js
-│   └── styles.css
+│   ├── styles.css
+│   └── theme.js                # Aplica o tema salvo antes da renderização
 ├── docs/screenshots/           # Imagens deste README
 └── tests/test-db.js            # Teste de conexão com o banco
 ```
@@ -145,6 +151,8 @@ Execute dentro da pasta `backend`:
 
 ## 📡 API
 
+> 📖 **Documentação interativa:** com a aplicação rodando, acesse **http://localhost:3000/api/docs** para ver todos os endpoints e testá-los direto pelo navegador.
+
 URL base: `http://localhost:3000/api/books`
 
 | Método | Rota | Descrição | Sucesso |
@@ -174,15 +182,21 @@ Se o autor ainda não existir, ele é criado automaticamente, na mesma transaç�
 | `400` | Dados inválidos | `{ "errors": { "title": "Título é obrigatório" } }` |
 | `400` | ID não numérico ou JSON malformado | `{ "message": "ID inválido" }` |
 | `404` | Livro inexistente | `{ "message": "Livro não encontrado" }` |
+| `413` | Corpo da requisição maior que 10 kb | `{ "message": "Corpo da requisição muito grande" }` |
+| `429` | Mais de 300 requisições em 15 minutos pelo mesmo IP | `{ "message": "Muitas requisições. Tente novamente em alguns minutos." }` |
 | `500` | Erro inesperado (detalhes apenas no log do servidor) | `{ "message": "Erro interno no servidor" }` |
 
 ## 🔒 Boas práticas aplicadas
 
 - Queries parametrizadas contra **SQL injection**
-- Renderização com `textContent` contra **XSS**
+- Renderização com `textContent` e **Content Security Policy** contra **XSS**
+- Cabeçalhos de segurança com **Helmet** (HSTS, `X-Frame-Options`, `nosniff`, sem `X-Powered-By`)
+- **Limite de requisições** por IP e **limite de tamanho** do corpo das requisições
+- **CORS restrito**: só origens configuradas em `CORS_ORIGIN` têm acesso
 - Erros internos registrados só no servidor, nunca expostos ao cliente
-- Validação de tipo e de intervalo no backend
+- Validação de tipo e de intervalo no backend e restrições no banco
 - Credenciais fora do repositório (`.env` no `.gitignore`)
+- Dependências sem vulnerabilidades conhecidas (`npm audit`)
 
 ## 🗺️ Roadmap
 
@@ -191,7 +205,8 @@ Se o autor ainda não existir, ele é criado automaticamente, na mesma transaç�
 - [x] Correções de segurança (XSS, vazamento de erros, validação)
 - [x] Script de criação do banco e seed com livros de exemplo
 - [x] Scripts `npm run dev` e `npm start`
-- [ ] Documentação interativa da API com Swagger
+- [x] Documentação interativa da API com Swagger
+- [x] Cabeçalhos de segurança, limite de requisições e CORS restrito
 - [ ] Paginação e busca no backend
 - [ ] Testes automatizados com Jest e Supertest
 - [ ] Docker Compose (API + PostgreSQL)
@@ -212,6 +227,8 @@ Contribuições são bem-vindas:
 <div align="center">
 
 Feito por **[Francisco Gorgonho](https://github.com/FranciscoGorgonho)**
+
+Distribuído sob a licença [MIT](LICENSE).
 
 ⭐ Se este projeto foi útil, deixe uma estrela!
 
